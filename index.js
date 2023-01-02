@@ -23,3 +23,5 @@ App.set('port', process.env.PORT || 2023)
 App.listen(App.get('port'), () => {
     console.log(`servidor levantado en puerto ${App.get('port')}`)
 })
+
+module.exports = App
