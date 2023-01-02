@@ -15,10 +15,6 @@ App.use(express.json({
     limit: '35mb'
 }))
 
-App.use('/', (req, res) => {
-    res.send('Cpanel aqui')
-})
-
 App.use('/api/arcontroller/', RouterUsers)
 
 App.set('port', process.env.PORT || 2023)

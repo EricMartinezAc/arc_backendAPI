@@ -35,9 +35,9 @@ module.exports = ClientsOwnerToFbase = {
         this.pswr = datos.pswr
         this.datosBancarios = datos.datosBancarios
     },
-    ConsultarDatosEnFBase: async (NoIdent__, clav_prodct__) => {
+    async ConsultarDatosEnFBase(NoIdent__, clav_prodct__) {
 
-        console.log('Analizando producto ' + NoIdent__ );
+        console.log('Analizando producto ' + NoIdent__);
         let resp = false
         let docdata = null
         await require('../Instancia_CLIENTES_collect')()
