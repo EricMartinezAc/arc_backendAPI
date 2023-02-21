@@ -94,7 +94,7 @@ router.post('/users/auth', async (req, res) => {
                             console.log('Encontrado: ', resultQ);
                             if (req.body.process_ === 'auth') {
                                 console.log(`Bienvenido de nuevo ${emailAuth_}`);
-                                res.json([true, `Bienvenido de nuevo ${emailAuth_}`])
+                                res.json([true, `Bienvenido de nuevo ${emailAuth_}`, 'info'])
                             }
                             if (req.body.process_ === 'regtr') {
                                 console.log(`Ya se encuentra registrado ${emailAuth_}`);
