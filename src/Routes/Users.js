@@ -12,8 +12,6 @@ const users_schema = require('../DBase/Mongoose/Models/users_schema')
 //Auth
 router.post('/users/auth', (req, res) => {
 
-
-
     //modelar datos
     const {
         emailAuth_,
@@ -37,10 +35,10 @@ router.post('/users/auth', (req, res) => {
                     if (authProduct) {
 
                         users_schema.find({
-                                email: emailAuth_,
-                                psw: pswLogin_,
-                                area: area_
-                            })
+                            email: emailAuth_,
+                            psw: pswLogin_,
+                            area: area_
+                        })
                             .then(docs => {
                                 if (docs.length < 1) {
                                     res.send('fail')

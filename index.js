@@ -3,7 +3,7 @@ const cors_ = require('cors')
 const bodyParser = require('body-parser')
 const RouterUsers = require('./src/Routes/Users')
 
-require('./src/DBase/Firebase/ConexionFirebase')
+//require('./src/DBase/Firebase/ConexionFirebase')
 
 const App = express()
 
