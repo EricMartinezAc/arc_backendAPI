@@ -15,7 +15,7 @@ App.use(express.json({
     limit: '35mb'
 }))
 
-App.use('/', (req, res) => {
+App.use('/home', (req, res) => {
     res.send('Cpanel aqui')
 })
 
