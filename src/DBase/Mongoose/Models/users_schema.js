@@ -2,19 +2,14 @@ const mongoose = require('mongoose')
 
 const users_schema = mongoose.Schema({
 
-    email: {
+    user: {
         type: String,
         required: false
     },
-    psw: {
-        type: String,
-        required: false
-    },
-    area: {
+    pswLogin: {
         type: String,
         required: false
     }
-
 })
 
 module.exports = mongoose.model('user', users_schema)

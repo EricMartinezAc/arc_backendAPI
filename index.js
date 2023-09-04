@@ -8,11 +8,11 @@ const RouterUsers = require('./src/Routes/Users')
 const App = express()
 
 // middlewares
-App.use(cors_({
-    origin: 'http://localhost:3000'
-}))
 App.use(express.json({
     limit: '35mb'
+}))
+App.use(cors_({
+    origin: 'http://localhost:3000'
 }))
 
 App.use('/home', (req, res) => {

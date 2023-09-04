@@ -1,122 +1,59 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const router = express.Router()
 
+const ConnectionMongoDB = require('../DBase/Mongoose/ConexionMongo')
+
 //modelos
-const conMongoAtlas = require('../DBase/Mongoose/ConexionMongo')
 const ClientsOwnerToFbase = require('../DBase/Firebase/Models/ClientsOwnerToFbase')
 const users_schema = require('../DBase/Mongoose/Models/users_schema')
 
 //ENDPOINTS
 
 //AUTENTICACIÓN
-router.post('/users/auth', (req, res) => {
-
-    //modelar datos
-    const {
-        emailAuth_,
-        pswLogin_,
-        clav_prodtc_,
-    } = req.body.datos_
-
-    if (emailAuth_ !== '' &&
-        pswLogin_ !== '' &&
-        clav_prodtc_ !== '' &&
-        req.body.process_ === 'auth') {
-        try {
-            conMongoAtlas(NoIdent_, area_)
-                .then(() => {
-                    console.log(`conectado a ${area_}`);
-                    const authProduct = ClientsOwnerToFbase.ConsultarDatosEnFBase(NoIdent_, clav_prodtc_)
-                    if (authProduct) {
-
-                        users_schema.find({
-                            email: emailAuth_,
-                            psw: pswLogin_,
-                            area: area_
-                        })
-                            .then(docs => {
-                                if (docs.length < 1) {
-                                    res.send('fail')
-                                }
-                                if (docs.length > 0) {
-                                    console.log('Encontrado: ', docs);
-                                    res.json(docs[0])
-                                }
-                            })
-                    } else {
-                        res.send('No use productos piratas')
-                        console.error(authProduct);
-                    }
-                })
-                .catch((error) => {
-                    res.send(error)
-                    console.error(error);
-                })
-
-        } catch (error) {
-            res.send(`${emailAuth} : ${error}`)
-            console.log(`${emailAuth} : ${error}`)
-        }
-
-    }
-
-
-
-
-
-})
 
 //REGISTRO
-router.post('/users/regtr', (req, res) => {
+router.post('/users/regtr', async (req, res) => {
 
-    //modelar datos
-    const {
-        emailAuth_,
-        pswLogin_,
-        clav_prodtc_,
-    } = req.body.datos_
-
-    if (emailAuth_ !== '' &&
-        pswLogin_ !== '' &&
-        clav_prodtc_ !== '' &&
+    if (req.body.datos_.user !== '' && req.body.datos_.user !== undefined &&
+        req.body.datos_.pswLogin !== '' && req.body.datos_.pswLogin !== undefined &&
+        req.body.datos_.id_prod !== '' && req.body.datos_.id_prod !== undefined &&
         req.body.process_ === 'regtr') {
-        res.json({ valor: true })
-        // try {
-        //     conMongoAtlas(NoIdent_, area_)
-        //         .then(() => {
-        //             console.log(`conectado a ${area_}`);
-        //             const authProduct = ClientsOwnerToFbase.ConsultarDatosEnFBase(NoIdent_, clav_prodtc_)
-        //             if (authProduct) {
 
-        //                 users_schema.find({
-        //                     email: emailAuth_,
-        //                     psw: pswLogin_,
-        //                     area: area_
-        //                 })
-        //                     .then(docs => {
-        //                         if (docs.length < 1) {
-        //                             res.send('fail')
-        //                         }
-        //                         if (docs.length > 0) {
-        //                             console.log('Encontrado: ', docs);
-        //                             res.json(docs[0])
-        //                         }
-        //                     })
-        //             } else {
-        //                 res.send('No use productos piratas')
-        //                 console.error(authProduct);
-        //             }
-        //         })
-        //         .catch((error) => {
-        //             res.send(error)
-        //             console.error(error);
-        //         })
+        //modelar datos
+        const {
+            user,
+            pswLogin,
+            id_prod,
+        } = req.body.datos_
 
-        // } catch (error) {
-        //     res.send(`${emailAuth} : ${error}`)
-        //     console.log(`${emailAuth} : ${error}`)
-        // }
+        //informe datos ingresan
+        console.log(['into', req.body.process_, user, pswLogin, id_prod])
+
+        //proceso
+        try {
+            await ConnectionMongoDB(id_prod)
+            //consultar si existe
+            let doc = await users_schema.findOne({ user: user, pswLogin: pswLogin }).exec()
+            await doc !== null ? { value: false } : users_schema({ user: user, pswLogin: pswLogin }).save()
+
+
+
+            // if (!respFindUser) {
+            //     let respSaveUser = await users_registr(id_prod, user, pswLogin)
+            //     console.log('====================================');
+            //     console.log(respSaveUser);
+            //     console.log('====================================');
+            // }
+            // if (respFindUser) {
+            //     console.log('====================================');
+            //     console.log(respSaveUser);
+            //     console.log('====================================');
+            // }
+
+        } catch (error) {
+            res.send(`${user} : ${error}`)
+            console.log(`${user} : ${error}`)
+        }
 
     } else {
         res.json({ valor: false })
