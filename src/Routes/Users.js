@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
-const ConnectionMongoDB = require('../DBase/Mongoose/ConexionMongo')
 
-//modelos
-const ClientsOwnerToFbase = require('../DBase/Firebase/Models/ClientsOwnerToFbase')
+//modulos bd
+const Conexiondb = require('../DBase/Mongoose/ConexionMongo')
 const users_schema = require('../DBase/Mongoose/Models/users_schema')
+const { FindByUSUandPsw, RegtrByUSUandPsw } = require('../DBase/Mongoose/Queries/CRUD_users')
 
 //ENDPOINTS
 
@@ -31,37 +31,33 @@ router.post('/users/regtr', async (req, res) => {
 
         //proceso
         try {
-            await ConnectionMongoDB(id_prod)
+            await Conexiondb(id_prod)
             //consultar si existe
-            let doc = await users_schema.findOne({ user: user, pswLogin: pswLogin }).exec()
-            await doc !== null ? { value: false } : users_schema({ user: user, pswLogin: pswLogin }).save()
+            let respFindByUSUandPsw = await FindByUSUandPsw(user, pswLogin)
+            if (respFindByUSUandPsw === null) {
+                let respRegtrByUSUandPsw = await RegtrByUSUandPsw(user, pswLogin)
+
+                res.json(await respRegtrByUSUandPsw.length > 0 || respRegtrByUSUandPsw !== null ?
+                    { valor: 300, msj: `Usuario ${user} fue almacenado exitosamente` } :
+                    { valor: 304, msj: `Error en almacenamiento ${user}, compruebe su conexión` }
+                )
+
+            } else {
+                res.json({
+                    valor: 303,
+                    msj: `${user} E-303: Ya se encuentra registrado `
+                })
+            }
 
 
-
-            // if (!respFindUser) {
-            //     let respSaveUser = await users_registr(id_prod, user, pswLogin)
-            //     console.log('====================================');
-            //     console.log(respSaveUser);
-            //     console.log('====================================');
-            // }
-            // if (respFindUser) {
-            //     console.log('====================================');
-            //     console.log(respSaveUser);
-            //     console.log('====================================');
-            // }
 
         } catch (error) {
-            res.send(`${user} : ${error}`)
-            console.log(`${user} : ${error}`)
+            res.json({ valor: 302, msj: `${user}: ${error}` })
         }
 
     } else {
-        res.json({ valor: false })
+        res.json({ valor: 301, msj: 'Datos enviados son erroneos' })
     }
-
-
-
-
 
 })
 
