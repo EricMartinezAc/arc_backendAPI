@@ -10,6 +10,36 @@ const { FindByUSUandPsw, RegtrByUSUandPsw } = require('../DBase/Mongoose/Queries
 //ENDPOINTS
 
 //AUTENTICACIÓN
+router.post('/users/auth', async (req, res) => {
+
+    if (req.body.datos_.user !== '' && req.body.datos_.user !== undefined &&
+        req.body.datos_.pswLogin !== '' && req.body.datos_.pswLogin !== undefined &&
+        req.body.datos_.id_prod !== '' && req.body.datos_.id_prod !== undefined &&
+        req.body.process_ === 'auth') {
+
+        //modelar datos
+        const {
+            user,
+            pswLogin,
+            id_prod,
+        } = req.body.datos_
+
+        //informe datos ingresan
+        console.log(['into', req.body.process_, user, pswLogin, id_prod])
+
+        //proceso
+        try {
+            await Conexiondb(id_prod)
+            //consultar si existe
+            let respFindByUSUandPsw = await FindByUSUandPsw(user, pswLogin)
+            await respFindByUSUandPsw !== null ?
+                res.json({ valor: 400, msj: `Bienvenido ${user}, ahora tienes el control` }) :
+                res.json({ valor: 403, msj: `${user} E-403: No se encontraron coincidencias ` })
+        } catch (error) { res.json({ valor: 402, msj: `${user}: ${error}` }) }
+
+    } else { res.json({ valor: 401, msj: 'Datos enviados son erroneos' }) }
+
+})
 
 //REGISTRO
 router.post('/users/regtr', async (req, res) => {
