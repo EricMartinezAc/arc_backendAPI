@@ -5,3 +5,11 @@ Content-Type: application/json
 {
 
 }
+
+###
+GET http://localhost:2023/api/arcontroller/app/dashboard HTTP/1.1
+
+{
+
+
+}

@@ -1,15 +1,20 @@
 const express = require('express')
 const router = express.Router()
+const jwt = require('jsonwebtoken')
 
 
 //modulos bd
 const Conexiondb = require('../DBase/Mongoose/ConexionMongo')
 const users_schema = require('../DBase/Mongoose/Models/users_schema')
-const { FindByUSUandPsw, RegtrByUSUandPsw } = require('../DBase/Mongoose/Queries/CRUD_users')
+const {
+    FindByUSUandPsw,
+    RegtrByUSUandPsw
+} = require('../DBase/Mongoose/Queries/CRUD_users')
 
 //ENDPOINTS
 
-//AUTENTICACIÓN
+//RUTAS
+//### AUTENTICACIÓN
 router.post('/users/auth', async (req, res) => {
 
     if (req.body.datos_.user !== '' && req.body.datos_.user !== undefined &&
@@ -32,16 +37,38 @@ router.post('/users/auth', async (req, res) => {
             await Conexiondb(id_prod)
             //consultar si existe
             let respFindByUSUandPsw = await FindByUSUandPsw(user, pswLogin)
-            await respFindByUSUandPsw !== null ?
-                res.json({ valor: 400, msj: `Bienvenido ${user}, ahora tienes el control` }) :
-                res.json({ valor: 403, msj: `${user} E-403: No se encontraron coincidencias ` })
-        } catch (error) { res.json({ valor: 402, msj: `${user}: ${error}` }) }
+            if (await respFindByUSUandPsw !== null) {
+                jwt.sign(respFindByUSUandPsw.user, 'Rouse17*', (err, token) => {
+                    res.json({
+                        valor: 400,
+                        msj: `Bienvenido ${user}, ahora tienes el control`,
+                        respt: token
+                    })
+                })
 
-    } else { res.json({ valor: 401, msj: 'Datos enviados son erroneos' }) }
+            } else {
+                res.json({
+                    valor: 403,
+                    msj: `${user} E-403: No se encontraron coincidencias `
+                })
+            }
+        } catch (error) {
+            res.json({
+                valor: 402,
+                msj: `${user}: ${error}`
+            })
+        }
+
+    } else {
+        res.json({
+            valor: 401,
+            msj: 'Datos enviados son erroneos'
+        })
+    }
 
 })
 
-//REGISTRO
+//### REGISTRO
 router.post('/users/regtr', async (req, res) => {
 
     if (req.body.datos_.user !== '' && req.body.datos_.user !== undefined &&
@@ -67,10 +94,13 @@ router.post('/users/regtr', async (req, res) => {
             if (respFindByUSUandPsw === null) {
                 let respRegtrByUSUandPsw = await RegtrByUSUandPsw(user, pswLogin)
 
-                res.json(await respRegtrByUSUandPsw.length > 0 || respRegtrByUSUandPsw !== null ?
-                    { valor: 300, msj: `Usuario ${user} fue almacenado exitosamente` } :
-                    { valor: 304, msj: `Error en almacenamiento ${user}, compruebe su conexión` }
-                )
+                res.json(await respRegtrByUSUandPsw.length > 0 || respRegtrByUSUandPsw !== null ? {
+                    valor: 300,
+                    msj: `Usuario ${user} fue almacenado exitosamente`
+                } : {
+                    valor: 304,
+                    msj: `Error en almacenamiento ${user}, compruebe su conexión`
+                })
 
             } else {
                 res.json({
@@ -82,14 +112,21 @@ router.post('/users/regtr', async (req, res) => {
 
 
         } catch (error) {
-            res.json({ valor: 302, msj: `${user}: ${error}` })
+            res.json({
+                valor: 302,
+                msj: `${user}: ${error}`
+            })
         }
 
     } else {
-        res.json({ valor: 301, msj: 'Datos enviados son erroneos' })
+        res.json({
+            valor: 301,
+            msj: 'Datos enviados son erroneos'
+        })
     }
 
 })
+
 
 
 module.exports = router

@@ -2,6 +2,7 @@ const express = require('express')
 const cors_ = require('cors')
 const bodyParser = require('body-parser')
 const RouterUsers = require('./src/Routes/Users')
+const RouterApp = require('./src/Routes/App')
 
 //require('./src/DBase/Firebase/ConexionFirebase')
 
@@ -20,6 +21,7 @@ App.use('/home', (req, res) => {
 })
 
 App.use('/api/arcontroller/', RouterUsers)
+App.use('/api/arcontroller/', RouterApp)
 
 App.set('port', process.env.PORT || 2023)
 
