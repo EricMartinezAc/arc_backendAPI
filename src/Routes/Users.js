@@ -8,7 +8,8 @@ const Conexiondb = require('../DBase/Mongoose/ConexionMongo')
 const users_schema = require('../DBase/Mongoose/Models/users_schema')
 const {
     FindByUSUandPsw,
-    RegtrByUSUandPsw
+    RegtrByUSUandPsw,
+    FindAndUpdateToken
 } = require('../DBase/Mongoose/Queries/CRUD_users')
 
 //ENDPOINTS
@@ -38,14 +39,24 @@ router.post('/users/auth', async (req, res) => {
             //consultar si existe
             let respFindByUSUandPsw = await FindByUSUandPsw(user, pswLogin)
             if (await respFindByUSUandPsw !== null) {
-                jwt.sign(respFindByUSUandPsw.user, 'Rouse17*', (err, token) => {
-                    res.json({
-                        valor: 400,
-                        msj: `Bienvenido ${user}, ahora tienes el control`,
-                        respt: token
-                    })
+                jwt.sign(respFindByUSUandPsw.user + ';' + String(new Date(Date.now()).getDate()), 'Rouse17*', async (err, token) => {
+                    if (err === null) {
+                        await FindAndUpdateToken(respFindByUSUandPsw._id.toString(), token)
+                        await res.json({
+                            valor: 400,
+                            msj: `Bienvenido ${user}, ahora tienes el control`,
+                            respt: token
+                        })
+                    }
+                    else {
+                        console.log(`No se pudo generar token para ${user}. Error E-404: ${err}`);
+                        res.json({
+                            valor: 404,
+                            msj: `No se pudo generar token`,
+                            respt: err
+                        })
+                    }
                 })
-
             } else {
                 res.json({
                     valor: 403,

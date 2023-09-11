@@ -7,4 +7,8 @@ const RegtrByUSUandPsw = async (user, pswLogin) => {
     return await new users_schema({ user: user, pswLogin: pswLogin }).save()
 }
 
-module.exports = { FindByUSUandPsw, RegtrByUSUandPsw }
+const FindAndUpdateToken = (id, _token) => {
+    return users_schema.findByIdAndUpdate({ _id: id }, { token: _token })
+}
+
+module.exports = { FindByUSUandPsw, RegtrByUSUandPsw, FindAndUpdateToken }

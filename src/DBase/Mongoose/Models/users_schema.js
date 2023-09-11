@@ -8,6 +8,10 @@ let users_schema = new mongoose.Schema({
     pswLogin: {
         type: String,
         required: false
+    },
+    token: {
+        type: String,
+        required: false
     }
 })
 
