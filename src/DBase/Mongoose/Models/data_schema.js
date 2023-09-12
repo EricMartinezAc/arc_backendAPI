@@ -1,18 +1,18 @@
 const mongoose = require('mongoose')
 
-let users_schema = new mongoose.Schema({
-  user: {
+const data_schema = mongoose.Schema({
+  sede: {
     type: String,
     required: false
   },
-  pswLogin: {
+  owner: {
     type: String,
     required: false
   },
-  token: {
-    type: String,
+  areas: {
+    type: Object,
     required: false
   }
 })
 
-module.exports = mongoose.model('user', users_schema)
+module.exports = mongoose.model('data', data_schema)
