@@ -26,17 +26,28 @@ router.post('/users/auth', async (req, res) => {
     req.body.process_ === 'auth'
   ) {
     //modelar datos
-    const { user, pswLogin, id_prod } = req.body.datos_
+    const { user, pswLogin, id_prod, clav_prodct } = req.body.datos_
 
     //informe datos ingresan
-    console.log(['into', req.body.process_, user, pswLogin, id_prod])
+    console.log([
+      'into',
+      req.body.process_,
+      user,
+      pswLogin,
+      id_prod,
+      clav_prodct
+    ])
 
     //proceso
     try {
       await Conexiondb(id_prod)
       //consultar si existe
-      let respFindByUSUandPsw = await FindByUSUandPsw(user, pswLogin)
-      if ((await respFindByUSUandPsw) !== null) {
+      let respFindByUSUandPsw = await FindByUSUandPsw(
+        user,
+        pswLogin,
+        clav_prodct
+      )
+      if (respFindByUSUandPsw !== null && respFindByUSUandPsw !== 'bad') {
         jwt.sign(
           respFindByUSUandPsw.user +
             ';' +
@@ -97,36 +108,57 @@ router.post('/users/regtr', async (req, res) => {
     req.body.process_ === 'regtr'
   ) {
     //modelar datos
-    const { user, pswLogin, id_prod } = req.body.datos_
+    const { user, pswLogin, id_prod, clav_prodct } = req.body.datos_
 
     //informe datos ingresan
-    console.log(['into', req.body.process_, user, pswLogin, id_prod])
+    console.log([
+      'into',
+      req.body.process_,
+      user,
+      pswLogin,
+      id_prod,
+      clav_prodct
+    ])
 
     //proceso
     try {
       await Conexiondb(id_prod)
       //consultar si existe
-      let respFindByUSUandPsw = await FindByUSUandPsw(user, pswLogin)
-      if (respFindByUSUandPsw === null) {
-        let respRegtrByUSUandPsw = await RegtrByUSUandPsw(user, pswLogin)
-
-        res.json(
-          (await respRegtrByUSUandPsw.length) > 0 ||
-            respRegtrByUSUandPsw !== null
-            ? {
-                valor: 300,
-                msj: `Usuario ${user} fue almacenado exitosamente`
-              }
-            : {
-                valor: 304,
-                msj: `Error en almacenamiento ${user}, compruebe su conexión`
-              }
-        )
-      } else {
+      let respFindByUSUandPsw = await FindByUSUandPsw(
+        user,
+        pswLogin,
+        clav_prodct
+      )
+      if (respFindByUSUandPsw === 'bad') {
         res.json({
-          valor: 303,
-          msj: `${user} E-303: Ya se encuentra registrado `
+          valor: 305,
+          msj: `${user} E-305: Su producto no está registrado. Pongase en contacto con soporte técnico`
         })
+      } else {
+        if (respFindByUSUandPsw === null) {
+          let respRegtrByUSUandPsw = await RegtrByUSUandPsw(
+            user,
+            pswLogin,
+            clav_prodct === 'PM' ? 'PM' : 'PO '
+          )
+          res.json(
+            (await respRegtrByUSUandPsw.length) > 0 ||
+              respRegtrByUSUandPsw !== null
+              ? {
+                  valor: 300,
+                  msj: `Usuario ${user} fue almacenado exitosamente`
+                }
+              : {
+                  valor: 304,
+                  msj: `Error en almacenamiento ${user}, compruebe su conexión`
+                }
+          )
+        } else {
+          res.json({
+            valor: 303,
+            msj: `${user} E-303: Ya se encuentra registrado `
+          })
+        }
       }
     } catch (error) {
       res.json({

@@ -12,6 +12,10 @@ let users_schema = new mongoose.Schema({
   token: {
     type: String,
     required: false
+  },
+  rol: {
+    type: String,
+    required: false
   }
 })
 
