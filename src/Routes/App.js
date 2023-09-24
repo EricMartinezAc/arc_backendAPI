@@ -18,8 +18,11 @@ function VerifyInToken (req, res, next) {
   if (typeof Bheader !== 'undefined') {
     req.token = Bheader.split(' ')[1]
     req.id_prod = Bheader.split(' ')[2]
+    req.user = Bheader.split(' ')[3]
+    console.log(Bheader)
     next()
   } else {
+    console.error(403)
     res.sendStatus(403)
   }
 }
@@ -29,7 +32,11 @@ function VerifyInToken (req, res, next) {
 router.get('/app/dashboard', VerifyInToken, (req, res) => {
   jwt.verify(req.token, 'Rouse17*', (error, data) => {
     if (error) {
-      res.sendStatus(403)
+      console.error(error)
+      res.json({
+        valor: 403,
+        msj: 'Error en generación de token: ' + error
+      })
     } else {
       console.log('todo dashboard', data.split(';')[0])
       res.json({
@@ -41,14 +48,41 @@ router.get('/app/dashboard', VerifyInToken, (req, res) => {
 })
 
 //-- consumo de API
-router.get('/load/data/user', VerifyInToken, async (req, res) => {
+router.get('/load/data/startapp', VerifyInToken, async (req, res) => {
   let token = req.token
-  let LoadDataUser = await FindUserByIdOnProduct(token)
+  let id_prod = req.id_prod
+  let user = req.user
+
+  let LoadDataUser = await FindUserByIdOnProduct(token, user)
   if (LoadDataUser !== null) {
     let dataAPI = await FindDataByIdUser(LoadDataUser._id.toString())
-    console.log(dataAPI)
+    if (dataAPI !== null) {
+      console.log('====================================')
+      console.log('responde: ', dataAPI)
+      console.log('====================================')
+      res.json({
+        valor: 200,
+        user: LoadDataUser,
+        data: dataAPI,
+        msj: 'Datos de aplicación encontrados'
+      })
+    } else {
+      console.log('====================================')
+      console.log('responde: ', dataAPI)
+      console.log('====================================')
+      res.json({
+        valor: 404,
+        msj: 'No existen datos asignados al usuario'
+      })
+    }
   } else {
-    console.log(LoadDataUser)
+    console.log('====================================')
+    console.log('responde: ', LoadDataUser)
+    console.log('====================================')
+    res.json({
+      valor: 403,
+      msj: 'Usuario o token expiraron'
+    })
   }
 })
 
