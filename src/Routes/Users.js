@@ -143,7 +143,7 @@ router.post('/users/regtr', async (req, res) => {
           )
           res.json(
             (await respRegtrByUSUandPsw.length) > 0 ||
-              respRegtrByUSUandPsw !== null
+              (await respRegtrByUSUandPsw) !== null
               ? {
                   valor: 300,
                   msj: `Usuario ${user} fue almacenado exitosamente`

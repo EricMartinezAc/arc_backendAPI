@@ -34,13 +34,13 @@ router.get('/app/dashboard', VerifyInToken, (req, res) => {
     if (error) {
       console.error(error)
       res.json({
-        valor: 403,
+        valor: 103,
         msj: 'Error en generación de token: ' + error
       })
     } else {
       console.log('todo dashboard', data.split(';')[0])
       res.json({
-        valor: 500,
+        valor: 100,
         data: data.split(';')[0]
       })
     }
@@ -71,7 +71,7 @@ router.get('/load/data/startapp', VerifyInToken, async (req, res) => {
       console.log('responde: ', dataAPI)
       console.log('====================================')
       res.json({
-        valor: 404,
+        valor: 204,
         msj: 'No existen datos asignados al usuario'
       })
     }
@@ -80,7 +80,7 @@ router.get('/load/data/startapp', VerifyInToken, async (req, res) => {
     console.log('responde: ', LoadDataUser)
     console.log('====================================')
     res.json({
-      valor: 403,
+      valor: 203,
       msj: 'Usuario o token expiraron'
     })
   }
